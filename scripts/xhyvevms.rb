@@ -12,7 +12,7 @@ Version = [0,0,1]
 class Optparse
 
     # Return a structure describing the options.
-    def self.parse(args, commands, localOptions)
+    def self.parse(args, subScripts, localOptions)
 
         config_path =  File.expand_path("~/.xhyvevms/config.yaml")
         default_options = YAML.load_file(config_path)
@@ -52,11 +52,11 @@ class Optparse
             opts.on_tail("-h", "--help", "Show this message") do
                 puts opts
 
-                #List all commands if no command is given
+                #List all subScripts/commands if no command is given
                 if $command.nil? then
                     puts "\nCommands:"
-                    commands.each do |command|
-                        puts "\t" + command.to_s() + "\t\t\t     " + command.description()
+                    subScripts.each do |subScript|
+                        puts "\t" + subScript.command + "\t\t\t     " + subScript.description
                     end
                 end
 
@@ -82,28 +82,28 @@ class Optparse
 end
 
 def main
-    commands = available_commands()
-    command_string = ARGV.first
+    subScripts = availableSubScripts()
+    command = ARGV.first
 
-    if command_string.nil? then
-        Optparse.parse(%w[--help], commands, nil)
+    if command.nil? then
+        Optparse.parse(%w[--help], subScripts, nil)
         exit
     end
 
-    index = commands.index { |command| command.to_s == command_string }
+    index = subScripts.index { |script| command == script.command }
 
     if index.nil? then
-        puts "Unknowed command: " + command_string
+        puts "Unknowed command: " + command
         puts "See --help for commands"
         exit
-    else
-        $command = commands[index]
     end
 
-    require $command.path
-    $options = Optparse.parse(ARGV,commands, $localOptions)
+    $subScript = subScripts[index]
+    require $subScript.path
+    $options = Optparse.parse(ARGV,subScripts, $localOptions)
 
-    command()
+    #
+    run()
 end
 
 # Only run code if executed directly.

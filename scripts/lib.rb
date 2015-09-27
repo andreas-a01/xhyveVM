@@ -6,22 +6,24 @@ class VM
     def status
         return "Unknowed"
     end
+
     def to_s()
         return name
     end
 end
 
-class Command
+class SubScript
     attr_accessor :path
-    attr_accessor :name
+    attr_accessor :command
 
     def initialize(file_path)
         self.path = file_path
-        self.name = File.basename(file_path).gsub(/^xhyvevms-/, "").gsub(/\.rb$/, "")
+        self.command = File.basename(file_path)
+                    .gsub(/^xhyvevms-/, "") #remove xhyvevms-from filename
+                    .gsub(/\.rb$/, "") #remove .rb extention
     end
 
-
-    def to_s()
+    def to_s
         return name
     end
 
@@ -61,12 +63,10 @@ def load_vms(directory)
     return vms
 end
 
-def available_commands
-
-    commands = []
+def availableSubScripts
+    subScripts = []
     Dir.glob("#{File.dirname(__FILE__)}/xhyvevms-*").each do |file_path|
-        command = Command.new(file_path)
-        commands.push(command)
+        subScripts.push(SubScript.new(file_path))
     end
-    return commands
+    return subScripts
 end
