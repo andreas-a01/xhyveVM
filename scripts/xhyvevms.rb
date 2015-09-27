@@ -55,8 +55,8 @@ class Optparse
                 #List all subScripts/commands if no command is given
                 if $command.nil? then
                     puts "\nCommands:"
-                    subScripts.each do |subScript|
-                        puts "\t" + subScript.command + "\t\t\t     " + subScript.description
+                    subScripts.each do |s|
+                        puts "\t" + s.command + "\t\t\t     " + s.description
                     end
                 end
 
@@ -102,7 +102,7 @@ def main
     require $subScript.path
     $options = Optparse.parse(ARGV,subScripts, $localOptions)
 
-    #
+    #execute run function from subScript
     run()
 end
 

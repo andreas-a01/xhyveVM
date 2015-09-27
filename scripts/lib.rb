@@ -3,14 +3,16 @@ class VM
     attr_accessor :name
     attr_accessor :status
 
+    def initialize(vm_dir)
+        self.path = vm_dir
+        self.name = File.basename(vm_dir)
+    end
+
     def status
         return "Unknowed"
     end
-
-    def to_s()
-        return name
-    end
 end
+
 
 class SubScript
     attr_accessor :path
@@ -20,15 +22,13 @@ class SubScript
         self.path = file_path
         self.command = File.basename(file_path)
                     .gsub(/^xhyvevms-/, "") #remove xhyvevms-from filename
-                    .gsub(/\.rb$/, "") #remove .rb extention
+                    .gsub(/\.rb$/, "")      #remove .rb extention
     end
 
-    def to_s
-        return name
-    end
-
-    def description()
-        description =  grep_head_description(self.path).split("\n")[1]
+    def description
+        #The third line of each subScript (after .../env ruby and usage),
+        #is expected to be a definetion of what is script does
+        description = grep_head_description(self.path).split("\n")[1]
         if description.nil? then
             return ""
         else
@@ -44,29 +44,23 @@ end
 
 
 def load_vms(directory)
-    vms_folders = []
+    vms = []
+
     Dir.glob(directory + '/*').each do |f|
         if File.directory?(f)
-            vms_folders.push(f)
+            vms.push(VM.new(f))
         end
-    end
-
-    vms = []
-    vms_folders.each do |vms_folder|
-        vm = VM.new
-        vm.path = vms_folder
-        vm.name = File.basename(vms_folder)
-
-        vms.push(vm)
     end
 
     return vms
 end
+
 
 def availableSubScripts
     subScripts = []
     Dir.glob("#{File.dirname(__FILE__)}/xhyvevms-*").each do |file_path|
         subScripts.push(SubScript.new(file_path))
     end
+
     return subScripts
 end
