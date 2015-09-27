@@ -9,7 +9,7 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    vms = load_vms($options['vms_path'])
+    vms = load_vms()
 
     vms.each do |vm|
         puts "* #{vm.name} \t\t[#{vm.status}]"

@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-inspect [options]
+#/ Usage: xhyvevms-inspect name [options]
 #/ Return information on VM
 
 
@@ -9,7 +9,35 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    puts "not implemented"
+    require 'pp'
+
+    if ARGV.length > 2 then
+        puts "list only tages one agument, see --help for usage"
+        exit
+    end
+
+    if ARGV.length < 2 then
+        puts "need a name of VM to inspect, see --help for usage"
+        exit
+    end
+
+    vm_name = ARGV[1]
+    vms = load_vms()
+    index = vms.index { |vm| vm_name == vm.name }
+
+    if index.nil?
+        puts "can't find VM: #{vm_name}"
+    end
+
+    vm = vms[index]
+    puts "name: #{vm.name}"
+    puts "path: #{vm.path}"
+    puts "size: #{vm.size}"
+    puts "status: #{vm.status}"
+    puts ""
+    puts "config:"
+    pp(vm.config)
+
 end
 
 # Only run code if executed directly.

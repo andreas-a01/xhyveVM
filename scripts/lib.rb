@@ -8,6 +8,16 @@ class VM
         self.name = File.basename(vm_dir)
     end
 
+    def config
+        @vmconfig = YAML.load_file(self.path + '/config.yml')
+        return @vmconfig
+    end
+
+    def size
+        size = `du -sh '#{self.path}'`
+        size.strip.gsub(/\s+.+/,"") #show only size
+    end
+
     def status
         return "Unknowed"
     end
@@ -43,10 +53,11 @@ def grep_head_description(file_path)
 end
 
 
-def load_vms(directory)
+def load_vms()
+    path =  File.expand_path($options['vms_path'])
     vms = []
 
-    Dir.glob(directory + '/*').each do |f|
+    Dir.glob(path + '/*').each do |f|
         if File.directory?(f)
             vms.push(VM.new(f))
         end
