@@ -83,17 +83,18 @@ end
 
 def main
     subScripts = availableSubScripts()
-    command = ARGV.first
+    $command = ARGV.first
 
-    if command.nil? then
+    if $command.nil? then
         Optparse.parse(%w[--help], subScripts, nil)
         exit
     end
 
-    index = subScripts.index { |script| command == script.command }
+    index = subScripts.index { |script| $command == script.command }
 
     if index.nil? then
-        puts "Unknowed command: " + command
+        Optparse.parse(ARGV,subScripts, nil)
+        puts "Unknowed command: " + $command
         puts "See --help for commands"
         exit
     end
