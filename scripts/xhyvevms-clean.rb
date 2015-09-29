@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-start <vmname> [options]
-#/ Start VM
+#/ Usage: xhyvevms-clean <vmname> [options]
+#/ Clean up after dead VM
 
 
 # Local Options
@@ -10,7 +10,7 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    if ARGV.length !=1 then
+    if ARGV.length < 1 then
         puts "vmname name missing"
         exit
     end
@@ -27,18 +27,13 @@ def run
         exit
     end
 
-    if (vm.status != "no running") && (! $options.force) then
-        puts "this VM is allready running"
+    if (vm.status != "dead") && (! $options.force) then
+        puts "can only clean up after dead VMs"
         exit
     end
 
-    $options.verbose ? (puts "DEBUG: changing path") : ()
-    Dir.chdir(vm.path){
-      $options.verbose ? (puts "DEBUG: run xhyve_wrapper thougth dtach") : ()
-      $options.verbose ? (puts "#{vm.start_string}") : ()
-
-      vm.start
-    }
+    puts "cleaning vm folder"
+    vm.clean
 end
 
 # Only run code if executed directly.
