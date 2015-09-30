@@ -10,7 +10,7 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    if ARGV.length < 0 then
+    if ARGV.length < 1 then
         puts "vmname name missing"
         exit
     end
