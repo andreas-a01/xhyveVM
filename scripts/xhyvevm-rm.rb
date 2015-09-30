@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-kill [options]
-#/ Kill running VM
+#/ Usage: xhyvevm-rm <vmname> [options]
+#/ Remove VM
 
 
 # Local Options
@@ -10,7 +10,7 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    if ARGV.length < 1 then
+    if ARGV.length < 0 then
         puts "vmname name missing"
         exit
     end
@@ -27,21 +27,13 @@ def run
         exit
     end
 
-    if (vm.status == "dead") && (! $options.force) then
-        puts "this VM is allready dead"
+    $options.verbose ? (puts "DEBUG: deleting VM folder") : ()
+    if (vm.status != "no running") && (! $options.force) then
+        puts "can only delete VM that's not running"
         exit
     end
 
-    if (vm.status == "no running") && (! $options.force) then
-        puts "this VM is not running"
-        exit
-    end
-
-    $options.verbose ? (puts "DEBUG: sending kill signal to VM") : ()
-    vm.kill
-
-    $options.verbose ? (puts "DEBUG: cleaning up after vm") : ()
-    vm.clean
+    vm.destroy
 end
 
 # Only run code if executed directly.

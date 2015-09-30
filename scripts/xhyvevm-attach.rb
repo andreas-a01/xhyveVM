@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-attach <vmname> [options]
+#/ Usage: xhyvevm-attach <vmname> [options]
 #/ Attach to running vm
 
 

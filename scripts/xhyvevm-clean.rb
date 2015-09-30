@@ -1,15 +1,16 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-inspect <vmname> [options]
-#/ See information on VM
+#/ Usage: xhyvevm-clean <vmname> [options]
+#/ Clean up after dead VM
 
 
 # Local Options
 $localOptions = Proc.new { |opts|
     opts.banner = SubScript.grep_head_description(__FILE__)
+    opts.on("--force", "Use force")   { options.force = true }
 }
 
 def run
-    if ARGV.length < 0 then
+    if ARGV.length < 1 then
         puts "vmname name missing"
         exit
     end
@@ -26,17 +27,13 @@ def run
         exit
     end
 
-    require 'pp'
+    if (vm.status != "dead") && (! $options.force) then
+        puts "can only clean up after dead VMs"
+        exit
+    end
 
-    puts "name: #{vm.name}"
-    puts "path: #{vm.path}"
-    puts "size: #{vm.size}"
-    puts "status: #{vm.status}"
-    puts "pid: #{vm.pid}"
-    puts ""
-    puts "config:"
-    pp(vm.config)
-
+    puts "cleaning vm folder"
+    vm.clean
 end
 
 # Only run code if executed directly.

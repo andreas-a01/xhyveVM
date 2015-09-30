@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-start <vmname> [options]
-#/ Start VM
+#/ Usage: xhyvevm-kill [options]
+#/ Kill running VM
 
 
 # Local Options
@@ -10,7 +10,7 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    if ARGV.length !=1 then
+    if ARGV.length < 1 then
         puts "vmname name missing"
         exit
     end
@@ -27,18 +27,21 @@ def run
         exit
     end
 
-    if (vm.status != "no running") && (! $options.force) then
-        puts "this VM is allready running"
+    if (vm.status == "dead") && (! $options.force) then
+        puts "this VM is allready dead"
         exit
     end
 
-    $options.verbose ? (puts "DEBUG: changing path") : ()
-    Dir.chdir(vm.path){
-      $options.verbose ? (puts "DEBUG: run xhyve_wrapper thougth dtach") : ()
-      $options.verbose ? (puts "#{vm.start_string}") : ()
+    if (vm.status == "no running") && (! $options.force) then
+        puts "this VM is not running"
+        exit
+    end
 
-      vm.start
-    }
+    $options.verbose ? (puts "DEBUG: sending kill signal to VM") : ()
+    vm.kill
+
+    $options.verbose ? (puts "DEBUG: cleaning up after vm") : ()
+    vm.clean
 end
 
 # Only run code if executed directly.

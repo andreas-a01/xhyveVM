@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-list [options]
+#/ Usage: xhyvevm-list [options]
 #/ List VMs
 
 

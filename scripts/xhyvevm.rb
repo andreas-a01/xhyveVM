@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms [options] <command>
+#/ Usage: xhyvevm [options] <command>
 
 require 'yaml'
 require 'optparse'

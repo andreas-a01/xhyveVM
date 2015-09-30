@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-export <vmname> [options]
+#/ Usage: xhyvevm-export <vmname> [options]
 #/ Export VM to tarball
 
 

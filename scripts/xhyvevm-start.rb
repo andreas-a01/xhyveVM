@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-rm <vmname> [options]
-#/ Remove VM
+#/ Usage: xhyvevm-start <vmname> [options]
+#/ Start VM
 
 
 # Local Options
@@ -10,7 +10,7 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    if ARGV.length < 0 then
+    if ARGV.length !=1 then
         puts "vmname name missing"
         exit
     end
@@ -27,13 +27,18 @@ def run
         exit
     end
 
-    $options.verbose ? (puts "DEBUG: deleting VM folder") : ()
     if (vm.status != "no running") && (! $options.force) then
-        puts "can only delete VM that's not running"
+        puts "this VM is allready running"
         exit
     end
 
-    vm.destroy
+    $options.verbose ? (puts "DEBUG: changing path") : ()
+    Dir.chdir(vm.path){
+      $options.verbose ? (puts "DEBUG: run xhyve_wrapper thougth dtach") : ()
+      $options.verbose ? (puts "#{vm.start_string}") : ()
+
+      vm.start
+    }
 end
 
 # Only run code if executed directly.

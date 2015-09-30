@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevms-import <tarball> [<vmname>] [options]
+#/ Usage: xhyvevm-import archive <tarball> [<vmname>] [options]
 #/ Import VM from a tarball
 
 
