@@ -23,6 +23,35 @@ A simpel wrapper about xhyve and a few unix tools, to simplify unsge.
     	see <command> --help for usage
 
 
+**Example**
+
+    #Clone somewhere
+    git clone https://github.com/andreas-a01/xhyveVM.git
+
+    #Create executable
+    cd xhyveVM/    
+    mkdir bin   
+    cd bin
+    ln -s ../scripts/xhyvevm.rb xhyvevm
+    chmod +x xhyvevm
+
+    #Add executable to PATH
+    PATH=$PATH:${PWD}
+
+    #Test xhyvevm
+    xhyvevm --help
+
+    #Create VMs dir
+    mkdir ~/xhyveVM/
+
+    #Import tinycore (see release for file)
+    xhyvevm import tinycore.tgz
+
+    #Start & attach
+    xhyvevm list
+    xhyvevm start tinycore
+    xhyvevm attach tinycore
+
 feedback is highly appreciated
 
 
@@ -32,6 +61,7 @@ Changelog
     Initial release  
     working with tinycore VM  
     network is missing  
+
 
 Roadmap
 -------
