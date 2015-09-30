@@ -10,7 +10,7 @@ class VM
 
     def config
         if config_file.nil? then
-            puts "Error: can't find config.yml"
+            $logger.error("can't find config file: #{self.config_file}")
             exit
         end
 
@@ -20,11 +20,21 @@ class VM
     def start
         xhyve_wrapper = File.expand_path( File.dirname(__FILE__) + "/../xhyve_wrapper.sh" )
 
-        exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.start_string}"
+        $logger.debug("changing path")
+        Dir.chdir(self.path){
+            $logger.debug("DEBUG: run xhyve_wrapper thougth dtach")
+            $logger.debug("arguments: #{self.start_string}")
+
+            exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.start_string}"
+        }
     end
 
     def destroy
-        exec "rm -r '#{self.path}'"
+        $logger.debug("deleting VM folder")
+        $logger.debug("changing path")
+        Dir.chdir(self.path){
+            exec "rm -r '#{self.path}'"
+        }
     end
 
     def start_string
@@ -42,7 +52,7 @@ class VM
 
         #SMP
         if ! vmconfig['vm']['smp'].nil? then
-            puts "error: no support for SMP"
+            $logger.error("no support for SMP, sorry")
             exit
         end
 
@@ -58,13 +68,13 @@ class VM
 
         #NET
         if ! vmconfig['vm']['net'].nil? then
-            puts "error: no support for network, sorry"
+            $logger.error("no support for network, sorry")
             exit
         end
 
         #IMG_CD
         if ! vmconfig['vm']['iso'].nil? then
-            puts "error: no support for iso, sorry"
+            $logger.error("error: no support for iso, sorry")
             exit
         end
 
@@ -97,12 +107,19 @@ class VM
     end
 
     def attach
-        exec "read -p 'Attaching to #{self.name}...\nTo detach from VM again, press (Ctrl-\\) at any time\n\nPress any key to continue... \n' && dtach -a console.tty"
+        $logger.debug("changing path to: #{self.path}")
+        Dir.chdir(self.path){
+            exec "read -p 'Attaching to #{self.name}...\nTo detach from VM again, press (Ctrl-\\) at any time\n\nPress any key to continue... \n' && dtach -a console.tty"
+        }
     end
 
     def size
-        size = `du -sh '#{self.path}'`
-        size.strip.gsub(/\s+.+/,"") #show only size
+        $logger.debug("changing path")
+        Dir.chdir(self.path){
+            size = `du -sh .`
+
+            return size.strip.gsub(/\s+.+/,"") #show only size
+        }
     end
 
     def clean
@@ -128,7 +145,10 @@ class VM
     end
 
     def kill
-        `kill -9 #{self.pid}`
+        $logger.debug("sending kill signal to VM")
+        Dir.chdir(self.path){
+            `kill -9 #{self.pid}`
+        }
     end
 
     def status
@@ -147,8 +167,9 @@ class VM
         if pid_file.nil? then
             return nil
         end
-
-        pid = `cat '#{pid_file}'`.to_i
+        Dir.chdir(self.path){
+            return `cat '#{pid_file}'`.to_i
+        }
     end
 
     def running?
@@ -169,7 +190,8 @@ class VM
         vmspath = File.expand_path($options['config']['vms_path'])
 
         if (! File.exist?(vmspath)) then
-            puts "can't open vmspath: #{vmspath}, check your config"
+            $logger.error("can't open vmspath: #{vmspath}, check your config")
+            exit
         end
         vms = []
 
@@ -196,19 +218,21 @@ class VM
         #extrant tmp place
         tmpPath = "/tmp/xhyvevms/"
         if File.exist?(tmpPath) then
-            $options.verbose ? (puts "DEBUG: tmp folder allready exsists deleting") : ()
-            `rm -r '#{tmpPath}'`
+            $logger.debug("tmp folder allready exsists, deleting")
+            print `rm -r '#{tmpPath}'`
         end
 
-        $options.verbose ? (puts "DEBUG: creating tmp folder") : ()
-        $options.verbose ? (puts "DEBUG: extracting VM") : ()
-        $options.verbose ? (puts "DEBUG: moving VM to vms_path") : ()
-        $options.verbose ? (puts "DEBUG: deleting tmp folder") : ()
+        $logger.debug("creating tmp folder")
+        print `mkdir '#{tmpPath}'`
 
-        exec "mkdir '#{tmpPath}' &&\
-        tar -xf '#{filename}' -C '#{tmpPath}' &&
-        mv '#{tmpPath}#{vmname_old}' '#{vms_path}'
-        `rm -r '#{tmpPath}'`"
+        $logger.debug("extracting VM")
+        print `tar -xf '#{filename}' -C '#{tmpPath}'`
+
+        $logger.debug("moving VM to vms_path")
+        print `mv '#{tmpPath}#{vmname_old}' '#{vms_path}'`
+
+        $logger.debug("deleting tmp folder")
+        print `rm -r '#{tmpPath}'`
     end
 
     private

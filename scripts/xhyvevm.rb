@@ -4,12 +4,21 @@
 require 'yaml'
 require 'optparse'
 require 'ostruct'
+require 'logger'
 
 Version = [0,1,0]
 
 require_relative "libs/vm.rb"
 require_relative "libs/subscript.rb"
 require_relative "libs/helpers.rb"
+
+
+$logger = Logger.new(STDOUT)
+$logger.level = Logger::WARN
+
+$logger.formatter = proc do |severity, datetime, progname, msg|
+  "#{severity}: #{msg}\n"
+end
 
 class Optparse
     # Return a structure describing the options.

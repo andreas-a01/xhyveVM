@@ -11,36 +11,33 @@ $localOptions = Proc.new { |opts|
 
 def run
     if ARGV.length < 1 then
-        puts "vmname name missing"
+        $logger.error("<vmname> argument missing, see --help for usage")
         exit
     end
     vmname = ARGV.shift
 
     if ARGV.length != 0 then
-        puts "only takes one argument"
+        $logger.error("#{$command} only takes one argument, see --help for usage")
         exit
     end
 
     vm =  VM.find(vmname)
     if vm.nil? then
-        puts "can't find vm: #{vmname}"
+        $logger.error("can't find vm: #{vmname}")
         exit
     end
 
     if (vm.status == "dead") && (! $options.force) then
-        puts "this VM is allready dead"
+        $logger.error("this #{vmname} is already dead")
         exit
     end
 
     if (vm.status == "no running") && (! $options.force) then
-        puts "this VM is not running"
+        $logger.error("this #{vmname} is not running")
         exit
     end
 
-    $options.verbose ? (puts "DEBUG: sending kill signal to VM") : ()
     vm.kill
-
-    $options.verbose ? (puts "DEBUG: cleaning up after vm") : ()
     vm.clean
 end
 

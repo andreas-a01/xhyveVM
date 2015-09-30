@@ -10,35 +10,29 @@ $localOptions = Proc.new { |opts|
 }
 
 def run
-    if ARGV.length != 1 then
-        puts "vmname name missing"
+    if ARGV.length < 1 then
+        $logger.error("<vmname> argument missing, see --help for usage")
         exit
     end
     vmname = ARGV.shift
 
     if ARGV.length != 0 then
-        puts "only takes one argument"
+        $logger.error("#{$command} only takes one argument, see --help for usage")
         exit
     end
 
     vm =  VM.find(vmname)
     if vm.nil? then
-        puts "can't find vm: #{vmname}"
+        $logger.error("can't find vm: #{vmname}")
         exit
     end
 
     if (vm.status != "no running") && (! $options.force) then
-        puts "this VM is allready running"
+        $logger.error("this VM is allready running")
         exit
     end
 
-    $options.verbose ? (puts "DEBUG: changing path") : ()
-    Dir.chdir(vm.path){
-      $options.verbose ? (puts "DEBUG: run xhyve_wrapper thougth dtach") : ()
-      $options.verbose ? (puts "#{vm.start_string}") : ()
-
-      vm.start
-    }
+    vm.start
 end
 
 # Only run code if executed directly.

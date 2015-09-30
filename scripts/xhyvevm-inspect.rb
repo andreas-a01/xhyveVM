@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#/ Usage: xhyvevm-inspect <vmname>  [options]
+#/ Usage: xhyvevm-inspect <vmname> [options]
 
 
 # Local Options
@@ -9,19 +9,19 @@ $localOptions = Proc.new { |opts|
 
 def run
     if ARGV.length < 1 then
-        puts "vmname name missing"
+        $logger.error("<vmname> argument missing, see --help for usage")
         exit
     end
     vmname = ARGV.shift
 
     if ARGV.length != 0 then
-        puts "only takes one argument"
+        $logger.error("#{$command} only takes one argument, see --help for usage")
         exit
     end
 
     vm =  VM.find(vmname)
     if vm.nil? then
-        puts "can't find vm: #{vmname}"
+        $logger.error("can't find vm: #{vmname}")
         exit
     end
 

@@ -11,7 +11,7 @@ $localOptions = Proc.new { |opts|
 
 def run
     if ARGV.length < 1 then
-        puts "tarball is missing"
+        $logger.error("<tarball> argument is missing, see --help for usage")
         exit
     end
     filename = ARGV.shift
@@ -23,22 +23,22 @@ def run
     end
 
     if ARGV.length != 0 then
-        puts " only takes two argument"
+        $logger.error("#{$command} only takes two argument")
         exit
     end
 
     if (! File.file?(filename))
-            puts "can't open file: #{filename}"
+            $logger.error("can't open file: #{filename}")
             exit
     end
 
     vm = VM.find(vmname)
     if ! vm.nil? then
         if ($options.force) then
-            puts "Removing exsisting vm"
+            $logger.warn("Removing exsisting vm")
             vm.rm
         else
-            puts "VM allready exsists"
+            $logger.error("VM allready exsists")
             exit
         end
     end

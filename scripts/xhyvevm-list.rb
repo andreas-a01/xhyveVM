@@ -10,7 +10,7 @@ $localOptions = Proc.new { |opts|
 
 def run
     if ARGV.length != 0 then
-        puts "takes no arguments"
+        $logger.error("#{$command} takes no arguments")
         exit
     end
 

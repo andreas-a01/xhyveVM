@@ -14,25 +14,24 @@ $localOptions = Proc.new { |opts, options|
 
 def run
     if ARGV.length < 1 then
-        puts "vmname name missing"
+        $logger.error("<vmname> argument missing, see --help for usage")
         exit
     end
     vmname = ARGV.shift
 
     if ARGV.length != 0 then
-        puts "only takes one argument"
+        $logger.error("#{$command} only takes one argument, see --help for usage")
         exit
     end
 
     vm =  VM.find(vmname)
     if vm.nil? then
-        puts "can't find vm: #{vmname}"
+        $logger.error("can't find vm: #{vmname}")
         exit
     end
 
     if (vm.status != "no running") && (! $options.force) then
-        puts "can only export VM that's not running"
-        puts $options.force
+        $logger.error("can only export VM that's not running")
         exit
     end
 
