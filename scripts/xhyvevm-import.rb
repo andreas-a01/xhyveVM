@@ -4,9 +4,13 @@
 
 
 # Local Options
-$localOptions = Proc.new { |opts|
+$localOptions = Proc.new { |opts,options|
+    options.check_archive = false
+    options.force = false
+
     opts.banner = SubScript.grep_head_description(__FILE__)
     opts.on("--force", "Use force")   { options.force = true }
+    opts.on("-c", "--check-archive", "Only check archive")   { options.check_archive = true }
 }
 
 def run
@@ -27,9 +31,19 @@ def run
         exit
     end
 
-    if (! File.file?(filename))
-            $logger.error("can't open file: #{filename}")
-            exit
+    if (! File.file?(filename)) then
+        $logger.error("can't open file: #{filename}")
+        exit
+    end
+
+    if (! VM.valid_archive?(filename))
+        $logger.error("not valid archive: #{filename}")
+        exit
+    end
+
+    if ($options.check_archive == true) then
+        $logger.info("valid archive: #{filename}")
+        exit
     end
 
     vm = VM.find(vmname)

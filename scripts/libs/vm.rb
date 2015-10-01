@@ -235,6 +235,15 @@ class VM
         print `rm -r '#{tmpPath}'`
     end
 
+    def self.valid_archive?(filename)
+        system("tar -tzf #{filename} >/dev/null")
+        if $?.exitstatus == 0 then
+            return true
+        end
+
+        return false
+    end
+
     private
     def config_file
         config_file = File.expand_path(self.path + '/config.yml')
