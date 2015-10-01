@@ -14,10 +14,14 @@ require_relative "libs/helpers.rb"
 
 
 $logger = Logger.new(STDOUT)
-$logger.level = Logger::WARN
+$logger.level = Logger::INFO
 
 $logger.formatter = proc do |severity, datetime, progname, msg|
-  "#{severity}: #{msg}\n"
+    if severity == "INFO" then
+        "#{msg}\n"
+    else
+        "#{severity}: #{msg}\n"
+    end
 end
 
 class Optparse
