@@ -4,7 +4,9 @@
 
 
 # Local Options
-$localOptions = Proc.new { |opts|
+$localOptions = Proc.new { |opts,options|
+    options.force = false
+
     opts.banner = SubScript.grep_head_description(__FILE__)
     opts.on("--force", "Use force")   { options.force = true }
 }

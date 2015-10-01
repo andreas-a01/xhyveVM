@@ -4,7 +4,9 @@
 
 
 # Local Options
-$localOptions = Proc.new { |opts, options|
+$localOptions = Proc.new { |opts,options|
+    options.force = false
+
     opts.banner = SubScript.grep_head_description(__FILE__)
     opts.on("-z", "--gzip", "Compress with gzip", String)   { options.compress = true }
     opts.on("-f", "--file=archive", "Sets filename of tarball", String)   { |archive| options.archivePath = archive }

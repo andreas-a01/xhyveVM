@@ -41,7 +41,6 @@ class Optparse
 
         options.config_path = config_path;
         options.config  = YAML.load_file(config_path)
-        options.force = false
 
         opt_parser = OptionParser.new do |opts|
             if localOptions then
