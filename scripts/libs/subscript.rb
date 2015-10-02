@@ -25,6 +25,7 @@ class SubScript
 
     #Class methods
     def self.grep_head_description(file)
+        $logger.debug("using grep to get description of #{file}")
         return `grep ^#/<'#{file}'|cut -c4-`
     end
 

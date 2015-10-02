@@ -24,7 +24,6 @@ class VM
         Dir.chdir(self.path){
             $logger.debug("DEBUG: run xhyve_wrapper thougth dtach")
             $logger.debug("arguments: #{self.start_string}")
-
             exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.start_string}"
         }
     end
@@ -33,6 +32,7 @@ class VM
         $logger.debug("deleting VM folder")
         $logger.debug("changing path")
         Dir.chdir(self.path){
+            $logger.debug("removing directory: #{file}")
             exec "rm -r '#{self.path}'"
         }
     end
@@ -109,6 +109,7 @@ class VM
     def attach
         $logger.debug("changing path to: #{self.path}")
         Dir.chdir(self.path){
+            $logger.debug("Using detach to reattach")
             exec "read -p 'Attaching to #{self.name}...\nTo detach from VM again, press (Ctrl-\\) at any time\n\nPress any key to continue... \n' && dtach -a console.tty"
         }
     end
@@ -116,18 +117,20 @@ class VM
     def size
         $logger.debug("changing path")
         Dir.chdir(self.path){
+            $logger.debug("getting size of VM with du")
             size = `du -sh .`
-
             return size.strip.gsub(/\s+.+/,"") #show only size
         }
     end
 
     def clean
         if ! (pid_file.nil?) then
+            $logger.debug("removing pid file: #{pid_file}")
             File.delete(pid_file)
         end
 
         if ! (console_file.nil?) then
+            $logger.debug("emoving console file: #{console_file}")
             File.delete(console_file)
         end
     end
@@ -141,12 +144,14 @@ class VM
 
         vmdir  = File.basename(self.path)
         parrentdir =  File.dirname(self.path)
+        $logger.debug("compressing console file: #{console_file}")
         exec "tar #{compress} -C '#{parrentdir}' -cf '#{archivePath}' '#{vmdir}/'"
     end
 
     def kill
         $logger.debug("sending kill signal to VM")
         Dir.chdir(self.path){
+            $logger.debug("sinding kill signal to process id: #{self.pid}")
             `kill -9 #{self.pid}`
         }
     end
@@ -168,6 +173,7 @@ class VM
             return nil
         end
         Dir.chdir(self.path){
+            $logger.debug("gettigg pid with cat from: #{pid_file} ")
             return `cat '#{pid_file}'`.to_i
         }
     end
