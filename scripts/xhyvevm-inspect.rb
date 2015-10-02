@@ -35,7 +35,6 @@ def run
     puts ""
     puts "config:"
     pp(vm.config)
-
 end
 
 # Only run code if executed directly.

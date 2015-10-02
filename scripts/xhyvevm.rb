@@ -6,12 +6,11 @@ require 'optparse'
 require 'ostruct'
 require 'logger'
 
-Version = [0,1,0]
-
 require_relative "libs/vm.rb"
 require_relative "libs/subscript.rb"
 require_relative "libs/helpers.rb"
 
+Version = [0,1,0]
 
 $logger = Logger.new(STDOUT)
 $logger.level = Logger::INFO
@@ -27,7 +26,7 @@ end
 class Optparse
     # Return a structure describing the options.
     def self.parse(args, localOptions)
-        #Set default options
+        # Set default options
         user_config = "~/.xhyvevms/config.yaml"
         default_config = File.dirname(__FILE__) + "/../config.yaml"
 
@@ -38,7 +37,6 @@ class Optparse
         end
 
         options = OpenStruct.new()
-
         options.config_path = config_path;
         options.config  = YAML.load_file(config_path)
 
@@ -54,7 +52,7 @@ class Optparse
             opts.on_tail("-h", "--help", "Show this message") do
                 puts opts
 
-                #List all subScripts/commands if no command is given
+                # List all subScripts/commands if no command is given
                 if $command.nil? then
                     puts "\nCommands:"
                     SubScript.find_all.each do |s|
@@ -72,10 +70,10 @@ class Optparse
                 puts ::Version.join('.')
                 exit
             end
-
         end
 
-        begin opt_parser.parse!(args)
+        begin
+            opt_parser.parse!(args)
         rescue OptionParser::InvalidOption => e
             puts "Invalid option see --help from usage"
             exit
@@ -108,7 +106,7 @@ def main
     # Optparse will exit if --help is set
     $options = Optparse.parse(ARGV, $localOptions)
 
-    #execute run function from subScript
+    # Execute run function from subScript
     run
 end
 

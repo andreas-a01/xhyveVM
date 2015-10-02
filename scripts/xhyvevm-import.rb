@@ -9,8 +9,8 @@ $localOptions = Proc.new { |opts,options|
     options.force = false
 
     opts.banner = SubScript.grep_head_description(__FILE__)
-    opts.on("--force", "Use force")   { options.force = true }
-    opts.on("-c", "--check-archive", "Only check archive")   { options.check_archive = true }
+    opts.on("--force", "Use force") { options.force = true }
+    opts.on("-c", "--check-archive", "Only check archive") { options.check_archive = true }
 }
 
 def run

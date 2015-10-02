@@ -22,17 +22,15 @@ class VM
 
         $logger.debug("changing path")
         Dir.chdir(self.path){
-            $logger.debug("DEBUG: run xhyve_wrapper thougth dtach")
-            $logger.debug("arguments: #{self.start_string}")
+            $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{self.start_string}")
             exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.start_string}"
         }
     end
 
     def destroy
-        $logger.debug("deleting VM folder")
         $logger.debug("changing path")
         Dir.chdir(self.path){
-            $logger.debug("removing directory: #{file}")
+            $logger.debug("removing VM directory: #{file}")
             exec "rm -r '#{self.path}'"
         }
     end

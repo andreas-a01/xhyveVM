@@ -6,7 +6,7 @@
 # Local Options
 $localOptions = Proc.new { |opts|
     opts.banner = SubScript.grep_head_description(__FILE__)
-    opts.on("--force", "Use force")   { options.force = true }
+    opts.on("--force", "Use force") { options.force = true }
 }
 
 def run
