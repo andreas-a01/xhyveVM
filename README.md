@@ -1,24 +1,27 @@
 xhyveVM
 ========
-A simpel wrapper about xhyve and a few unix tools, to simplify unsge.
+A command line tool, that simplifies running virtual machines in xhyve.
+
+I am only tested this script in El Capitan and you will need a 2010 or later Mac (i.e. a CPU that supports EPT).
+
 
 **Script usage**
 
     Usage: xhyvevm [options] <command>
-
         -h, --help                       Show this message
             --version                    Show version
 
     Commands:
-    	attach  		     Attach to running vm
-    	clean   		     Clean up after dead VM
-    	export  		     Export VM to tarball
-    	import  		     Import VM from a tarball
-    	inspect 		     See information on VM
-    	kill    		     Kill running VM
-    	list    		     List VMs
-    	rm      		     Remove VM
-    	start   		     Start VM
+    	attach			     Attach to running vm
+    	check			     Check config, dependences and VMs
+    	clean			     Clean up after dead VM
+    	export			     Export VM to tarball
+    	import			     Import VM from a tarball
+    	inspect			     See information on VM
+    	kill			     Kill running VM
+    	list			     List VMs
+    	rm  			     Remove VM
+    	start			     Start VM
 
     	see <command> --help for usage
 
@@ -38,39 +41,56 @@ A simpel wrapper about xhyve and a few unix tools, to simplify unsge.
     #Add executable to PATH
     PATH=$PATH:${PWD}
 
-    #Test xhyvevm
-    xhyvevm --help
-
     #Create VMs dir
     mkdir ~/xhyveVM/
 
+    #Check xhyvevm
+    xhyvevm check
+
     #Import tinycore (see release for file)
-    xhyvevm import tinycore.tgz
+    xhyvevm import tinycore.tar
 
     #Start & attach
     xhyvevm list
     xhyvevm start tinycore
     xhyvevm attach tinycore
 
-feedback is highly appreciated
+
+Feedback is highly appreciated
 
 
 Changelog
 ---------
+
 * 0.1  
     Initial release  
     working with tinycore VM  
     network is missing  
 
+* 0.2
+    New commands
+        * Check: Check config, dependences and VMs
+
+    Changes to commands
+        * Kill: Does not run clean
+        * Import: Checks archive before import
+
+    General
+        * Logger now handler most message
+        * Better messages from script in general
+        * Debug messages before every system command.
+        * VM Class extended for
+        * New VMconfig class, now handles config for VM
+        * Config is checked before being used
+        * some code clean up.
+
+    Bugfixs
+        Fix error in handling for aguments
+        Fix error in localOptions
+
 
 Roadmap
 -------
-* 0.2
-    * better logging
-    * validation of config files
-    * validation of tarballs
-    * code clean up
-
 
 * 0.4
     * network

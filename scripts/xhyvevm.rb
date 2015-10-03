@@ -11,7 +11,7 @@ require_relative "libs/vm_config.rb"
 require_relative "libs/subscript.rb"
 require_relative "libs/helpers.rb"
 
-Version = [0,1,0]
+Version = [0,2,0]
 
 $logger = Logger.new(STDOUT)
 $logger.level = Logger::INFO
