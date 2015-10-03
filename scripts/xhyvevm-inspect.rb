@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #/ Usage: xhyvevm-inspect <vmname> [options]
-
+#/ See information on VM
 
 # Local Options
 $localOptions = Proc.new { |opts|
