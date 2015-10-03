@@ -31,8 +31,13 @@ def run
         exit
     end
 
-    if (vm.status != "no running") && (! $options.force) then
-        $logger.error("can only export VM that's not running")
+    if (vm.status == :running) && (! $options.force) then
+        $logger.error("can't export running VM,")
+        exit
+    end
+
+    if (vm.status == :dead) && (! $options.force) then
+        $logger.error("can't export dead VM, use clean first")
         exit
     end
 

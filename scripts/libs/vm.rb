@@ -156,14 +156,14 @@ class VM
 
     def status
         if pid_file.nil? then
-            return "no running"
+            return :stopped
         end
 
         if running? then
-            return "running"
+            return :running
         end
 
-        return "dead"
+        return :dead
     end
 
     def pid

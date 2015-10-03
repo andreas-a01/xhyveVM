@@ -27,8 +27,8 @@ def run
         exit
     end
 
-    if (vm.status != "no running") && (! $options.force) then
-        $logger.error("can only delete VM that's not running or dead")
+    if (vm.status == :running) && (! $options.force) then
+        $logger.error("can only delete VM that's stopped or dead")
         exit
     end
 

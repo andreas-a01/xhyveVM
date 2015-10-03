@@ -29,7 +29,7 @@ def run
         exit
     end
 
-    if (vm.status != "dead") && (! $options.force) then
+    if (vm.status != :dead) && (! $options.force) then
         $logger.error("can only clean up after dead VMs")
         exit
     end

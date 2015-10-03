@@ -29,8 +29,13 @@ def run
         exit
     end
 
-    if (vm.status != "no running") && (! $options.force) then
-        $logger.error("this VM is allready running")
+    if (vm.status == :running) && (! $options.force) then
+        $logger.error("VM is allready running")
+        exit
+    end
+
+    if (vm.status == :dead) && (! $options.force) then
+        $logger.error("VM is dead, use clean first")
         exit
     end
 

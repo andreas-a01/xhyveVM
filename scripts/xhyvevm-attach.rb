@@ -29,7 +29,7 @@ def run
         exit
     end
 
-    if (vm.status == "no running"  || $options.force) then
+    if (! vm.status == :running) && (! $options.force) then
         $logger.error("can't attach to a VM that's not running")
         exit
     end

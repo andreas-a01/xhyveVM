@@ -29,12 +29,12 @@ def run
         exit
     end
 
-    if (vm.status == "dead") && (! $options.force) then
+    if (vm.status == :dead) && (! $options.force) then
         $logger.error("this #{vmname} is already dead")
         exit
     end
 
-    if (vm.status == "no running") && (! $options.force) then
+    if (vm.status == :stopped) && (! $options.force) then
         $logger.error("this #{vmname} is not running")
         exit
     end
