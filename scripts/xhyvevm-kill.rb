@@ -40,7 +40,6 @@ def run
     end
 
     vm.kill
-    vm.clean
 end
 
 # Only run code if executed directly.
