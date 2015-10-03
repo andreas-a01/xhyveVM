@@ -7,6 +7,7 @@ require 'ostruct'
 require 'logger'
 
 require_relative "libs/vm.rb"
+require_relative "libs/vm_config.rb"
 require_relative "libs/subscript.rb"
 require_relative "libs/helpers.rb"
 

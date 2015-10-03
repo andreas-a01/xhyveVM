@@ -34,7 +34,7 @@ def run
     puts "pid: #{vm.pid}"
     puts ""
     puts "config:"
-    pp(vm.config)
+    pp(vm.config.hash)
 end
 
 # Only run code if executed directly.

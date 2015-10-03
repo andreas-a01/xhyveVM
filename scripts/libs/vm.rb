@@ -14,7 +14,8 @@ class VM
             exit
         end
 
-        return YAML.load_file(config_file)
+        config = VMconfig.new(config_file)
+        return config
     end
 
     def start
@@ -22,8 +23,8 @@ class VM
 
         $logger.debug("changing path")
         Dir.chdir(self.path){
-            $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{self.start_string}")
-            exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.start_string}"
+            $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{self.config.start_string}")
+            exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.config.start_string}"
         }
     end
 
@@ -33,75 +34,6 @@ class VM
             $logger.debug("removing VM directory: #{file}")
             exec "rm -r '#{self.path}'"
         }
-    end
-
-    def start_string
-        vmconfig = self.config
-
-        start_string = ""
-
-        #ACPI
-        if vmconfig['vm']['acpi'] then
-            start_string += "-A"
-        end
-
-        #Memory
-        start_string += " -m #{vmconfig['vm']['memory']}"
-
-        #SMP
-        if ! vmconfig['vm']['smp'].nil? then
-            $logger.error("no support for SMP, sorry")
-            exit
-        end
-
-        #PCI_DEV
-        vmconfig['vm']['pci'].each do |pci|
-                start_string += " -s #{pci}"
-        end
-
-        #LPC_DEV
-        vmconfig['vm']['lpc'].each do |lpc|
-                start_string += " -l #{lpc}"
-        end
-
-        #NET
-        if ! vmconfig['vm']['net'].nil? then
-            $logger.error("no support for network, sorry")
-            exit
-        end
-
-        #IMG_CD
-        if ! vmconfig['vm']['iso'].nil? then
-            $logger.error("error: no support for iso, sorry")
-            exit
-        end
-
-        #IMG_HDD
-        if ! vmconfig['vm']['hdd'].nil? then
-            vmconfig['vm']['hdd'].each do |hdd|
-                    start_string += " -s #{hdd}"
-            end
-        end
-
-        #UUID
-        # start_string += " -U #{UUID}"
-        if ! vmconfig['uuid'].nil? then
-            start_string += " -U #{vmconfig['uuid']}"
-        end
-
-        #EXTRA_ARGS
-        if ! vmconfig['EXTRA_ARGS'].nil? then
-            start_string += " #{vmconfig['EXTRA_ARGS']}"
-        end
-
-        #boot
-        kernel = vmconfig['boot']['kernel']
-        initrd = vmconfig['boot']['initrd']
-        cmdline = vmconfig['boot']['cmdline']
-
-        start_string += " -f kexec,#{kernel},#{initrd},#{cmdline}"
-
-        return start_string
     end
 
     def attach
