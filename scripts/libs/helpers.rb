@@ -13,3 +13,13 @@ def helper_sanitize_filename(filename)
   # Finally, join the parts with a period and return the result
   return fn.join '.'
 end
+
+
+def check_command(command)
+    system("which #{command} >/dev/null")
+    if $?.exitstatus == 0 then
+        return true
+    else
+        return false
+    end
+end

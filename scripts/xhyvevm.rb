@@ -26,17 +26,20 @@ end
 class Optparse
     # Return a structure describing the options.
     def self.parse(args, localOptions)
-        # Set default options
-        user_config = "~/.xhyvevms/config.yaml"
-        default_config = File.dirname(__FILE__) + "/../config.yaml"
-
-        if File.file?(File.expand_path(user_config)) then
-            config_path = File.expand_path(user_config)
-        else
-            config_path = File.expand_path(default_config)
-        end
 
         options = OpenStruct.new()
+
+        # Set default options
+        options.user_config = File.expand_path("~/.xhyvevms/config.yaml")
+        options.default_config = File.expand_path(File.dirname(__FILE__) + "/../config.yaml")
+
+        if File.file?(options.user_config) then
+            config_path = options.user_config
+        else
+            config_path = options.default_config
+        end
+
+
         options.config_path = config_path;
         options.config  = YAML.load_file(config_path)
 
