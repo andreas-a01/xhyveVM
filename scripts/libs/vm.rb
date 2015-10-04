@@ -21,10 +21,18 @@ class VM
     def start
         xhyve_wrapper = File.expand_path( File.dirname(__FILE__) + "/../xhyve_wrapper.sh" )
 
+        use_sudo = config.hash['vm'].has_key?('net')
+
         $logger.debug("changing path")
         Dir.chdir(self.path){
             $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{self.config.start_string}")
-            exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.config.start_string}"
+
+            if use_sudo then
+                exec "sudo dtach -n console.tty -z #{xhyve_wrapper} #{self.config.start_string} && sudo chmod 770 console.tty"
+            else
+                exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.config.start_string}"
+            end
+
         }
     end
 
@@ -80,9 +88,16 @@ class VM
 
     def kill
         $logger.debug("sending kill signal to VM")
+
+        use_sudo = (! File.stat(pid_file).owned?)
+
         Dir.chdir(self.path){
             $logger.debug("sinding kill signal to process id: #{self.pid}")
-            `kill -9 #{self.pid}`
+            if use_sudo then
+                exec "sudo kill -9 #{self.pid}"
+            else
+                exec "kill -9 #{self.pid}"
+            end
         }
     end
 
