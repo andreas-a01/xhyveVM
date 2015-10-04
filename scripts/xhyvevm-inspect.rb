@@ -32,6 +32,7 @@ def run
     puts "size: #{vm.size}"
     puts "status: #{vm.status}"
     puts "pid: #{vm.pid}"
+    puts "uuid: #{vm.uuid}"
     puts ""
     puts "config:"
     pp(vm.config.hash)

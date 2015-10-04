@@ -136,6 +136,19 @@ class VM
         end
     end
 
+    def uuid
+        if config.hash.has_key?('uuid') then
+            return config.hash['uuid']
+        end
+
+        if tmpuuid then
+            return File.read(tmpuuid).to_s
+        end
+
+        return nil
+    end
+
+
     #Class methods
     def self.find_all
         vmspath = File.expand_path($options['config']['vms_path'])
@@ -196,6 +209,12 @@ class VM
     end
 
     private
+    def tmpuuid
+        tmpuuid = File.expand_path(self.path + '/tmpuuid')
+
+        return File.file?(tmpuuid) ? tmpuuid : nil
+    end
+
     def config_file
         config_file = File.expand_path(self.path + '/config.yml')
 

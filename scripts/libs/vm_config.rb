@@ -34,8 +34,8 @@ class VMconfig
         require_keys = ['version', 'type', 'boot', 'vm']
         check_keys(self.config, require_keys, delete: true, require: true)
 
-        require_keys = ['hest']
-        check_keys(self.config, require_keys,delete: true)
+        require_keys = ['uuid']
+        check_keys(self.config, require_keys, delete: true)
 
         if self.config.length != 0 then
             self.config.keys.each do |key|
@@ -77,8 +77,10 @@ class VMconfig
         end
 
         #NET
-        vmconfig['vm']['net'].each do |net|
-            start_string += " -s #{net}"
+        if (! vmconfig['vm']['net'].nil?) then
+            vmconfig['vm']['net'].each do |net|
+                start_string += " -s #{net}"
+            end
         end
 
         #IMG_CD
@@ -95,8 +97,17 @@ class VMconfig
         end
 
         #UUID
-        # start_string += " -U #{UUID}"
-        if ! vmconfig['uuid'].nil? then
+        # UUID is needed to find mac and then if of VM,
+        # if a UUID is not set in the config, asign a random and save to file
+        if ( !vmconfig['vm']['net'].nil? ) && (vmconfig['uuid'].nil? ) then
+            require "securerandom"
+            tmpuuid  = SecureRandom.uuid
+
+            path = File.dirname(self.file_path)
+            Dir.chdir(path){
+                `echo #{tmpuuid} > tmpuuid`
+            }
+        elsif  (! vmconfig['uuid'].nil?)
             start_string += " -U #{vmconfig['uuid']}"
         end
 
