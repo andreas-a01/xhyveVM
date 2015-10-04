@@ -77,9 +77,8 @@ class VMconfig
         end
 
         #NET
-        if ! vmconfig['vm']['net'].nil? then
-            $logger.error("no support for network, sorry")
-            exit
+        vmconfig['vm']['net'].each do |net|
+            start_string += " -s #{net}"
         end
 
         #IMG_CD
