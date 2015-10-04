@@ -19,6 +19,7 @@ class VMconfig
             self.config = YAML.load_file(self.file_path)
         rescue Exception => e
             $logger.error("VM config file is not valid YAML")
+            $logger.debug(e)
             exit
           return false
         end

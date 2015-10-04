@@ -80,6 +80,7 @@ class Optparse
             opt_parser.parse!(args)
         rescue OptionParser::InvalidOption => e
             puts "Invalid option see --help from usage"
+            $logger.debug(e)
             exit
         end
 
