@@ -126,7 +126,7 @@ class VM
         end
         Dir.chdir(self.path){
             $logger.debug("gettigg pid with cat from: #{pid_file} ")
-            return `cat '#{pid_file}'`.to_i
+            return File.read(pid_file).strip.to_i
         }
     end
 
@@ -155,7 +155,7 @@ class VM
 
 
         if uuid_file then
-            return File.read(uuid_file).gsub(/\n/,"")
+            return File.read(uuid_file).strip
         end
 
         return create_uuid
@@ -167,7 +167,7 @@ class VM
         end
         Dir.chdir(self.path){
             #$logger.debug("gettigg mac address with cat from: #{mac_address_file} ")
-            return `cat '#{mac_address_file}'`.to_s.strip
+            return File.read(mac_address_file).strip
         }
     end
 
