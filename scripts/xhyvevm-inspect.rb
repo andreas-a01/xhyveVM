@@ -33,7 +33,9 @@ def run
     puts "status: #{vm.status}"
     puts "pid: #{vm.pid}"
     puts "uuid: #{vm.uuid}"
-    puts "mac_address: #{vm.mac_address}"    
+    puts "mac_address: #{vm.mac_address}"
+    puts "ip_address: #{vm.ip_address}"    
+
     puts ""
     puts "config:"
     pp(vm.config.hash)

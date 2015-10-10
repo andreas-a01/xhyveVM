@@ -167,8 +167,32 @@ class VM
         end
         Dir.chdir(self.path){
             #$logger.debug("gettigg mac address with cat from: #{mac_address_file} ")
-            return `cat '#{mac_address_file}'`.to_s
+            return `cat '#{mac_address_file}'`.to_s.strip
         }
+    end
+
+    def ip_address
+        if (mac_address.nil?) then
+            return nil
+        end
+
+        if (! self.running?) then
+            return nil
+        end
+
+        dhcpd_leases = File.read("/var/db/dhcpd_leases")
+        leases = dhcpd_leases.scan(/\{.*?\}/m)
+
+        leases.each do |lease|
+
+            lease_mac = lease.match(/hw_address=1,(.*?)\n/)
+            if (lease_mac[1] == self.mac_address) then
+                lease_ip = lease.match(/ip_address=(.*?)\n/)
+                return lease_ip[1]
+            end
+        end
+
+        return "fail"
     end
 
     #Class methods
