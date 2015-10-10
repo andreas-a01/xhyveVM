@@ -21,16 +21,23 @@ class VM
     def start
         xhyve_wrapper = File.expand_path( File.dirname(__FILE__) + "/../xhyve_wrapper.sh" )
 
-        use_sudo = config.hash['vm'].has_key?('net')
+        start_string = config.start_string(self.uuid)
+
+        has_network = config.hash['vm'].has_key?('net')
+
+        if (has_network and mac_address.nil?) then
+            $logger.warn("Need to setup mac adresse before running")
+            create_mac_address
+        end
 
         $logger.debug("changing path")
         Dir.chdir(self.path){
-            $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{self.config.start_string}")
+            $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{start_string}")
 
-            if use_sudo then
-                exec "sudo dtach -n console.tty -z #{xhyve_wrapper} #{self.config.start_string} && sudo chmod 770 console.tty"
+            if (has_network) then
+                exec "sudo dtach -n console.tty -z #{xhyve_wrapper} #{start_string} && sudo chmod 770 console.tty"
             else
-                exec "dtach -n console.tty -z #{xhyve_wrapper} #{self.config.start_string}"
+                exec "dtach -n console.tty -z #{xhyve_wrapper} #{start_string}"
             end
 
         }
@@ -137,17 +144,32 @@ class VM
     end
 
     def uuid
+        if (config.hash.has_key?('uuid') && uuid_file) then
+            $logger.warn("UUID both in config and on file, using the one from config")
+            return config.hash['uuid']
+        end
+
         if config.hash.has_key?('uuid') then
             return config.hash['uuid']
         end
 
-        if tmpuuid then
-            return File.read(tmpuuid).to_s
+
+        if uuid_file then
+            return File.read(uuid_file).gsub(/\n/,"")
         end
 
-        return nil
+        return create_uuid
     end
 
+    def mac_address
+        if mac_address_file.nil? then
+            return nil
+        end
+        Dir.chdir(self.path){
+            #$logger.debug("gettigg mac address with cat from: #{mac_address_file} ")
+            return `cat '#{mac_address_file}'`.to_s
+        }
+    end
 
     #Class methods
     def self.find_all
@@ -209,10 +231,34 @@ class VM
     end
 
     private
-    def tmpuuid
-        tmpuuid = File.expand_path(self.path + '/tmpuuid')
+    def create_mac_address
+        uuid2mac = File.expand_path( File.dirname(__FILE__) + "/../../deps/uuid2mac" )
+        Dir.chdir(self.path){
+            exec "sudo #{uuid2mac} #{uuid} > mac_address"
+        }
+    end
 
-        return File.file?(tmpuuid) ? tmpuuid : nil
+    def create_uuid
+        require "securerandom"
+        uuid  = SecureRandom.uuid
+
+        $logger.debug("Generating UUID and saving it in file: uuid")
+        Dir.chdir(self.path){
+            `echo #{uuid} > uuid`
+        }
+        return uuid
+    end
+
+    def mac_address_file
+        mac_address_file = File.expand_path(self.path + '/mac_address')
+
+        return File.file?(mac_address_file) ? mac_address_file : nil
+    end
+
+    def uuid_file
+        uuid_file = File.expand_path(self.path + '/uuid')
+
+        return File.file?(uuid_file) ? uuid_file : nil
     end
 
     def config_file

@@ -14,6 +14,9 @@ class VMconfig
     end
 
     def check
+        require_keys = ['version', 'type', 'boot', 'vm']
+        optionel_keys = ['uuid']
+
         # Check file is valie yaml
         begin
             self.config = YAML.load_file(self.file_path)
@@ -31,11 +34,8 @@ class VMconfig
             exit
         end
 
-        require_keys = ['version', 'type', 'boot', 'vm']
         check_keys(self.config, require_keys, delete: true, require: true)
-
-        require_keys = ['uuid']
-        check_keys(self.config, require_keys, delete: true)
+        check_keys(self.config, optionel_keys, delete: true)
 
         if self.config.length != 0 then
             self.config.keys.each do |key|
@@ -47,7 +47,7 @@ class VMconfig
         return true
     end
 
-    def start_string
+    def start_string(uuid)
         vmconfig = self.hash
 
         start_string = ""
@@ -99,16 +99,8 @@ class VMconfig
         #UUID
         # UUID is needed to find mac and then if of VM,
         # if a UUID is not set in the config, asign a random and save to file
-        if ( !vmconfig['vm']['net'].nil? ) && (vmconfig['uuid'].nil? ) then
-            require "securerandom"
-            tmpuuid  = SecureRandom.uuid
-
-            path = File.dirname(self.file_path)
-            Dir.chdir(path){
-                `echo #{tmpuuid} > tmpuuid`
-            }
-        elsif  (! vmconfig['uuid'].nil?)
-            start_string += " -U #{vmconfig['uuid']}"
+        if ( ! uuid.nil? ) then
+            start_string += " -U #{uuid}"
         end
 
         #EXTRA_ARGS
