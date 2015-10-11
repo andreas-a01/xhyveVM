@@ -35,7 +35,7 @@ class VM
             $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{start_string}")
 
             if (has_network) then
-                exec "sudo dtach -n console.tty -z #{xhyve_wrapper} #{start_string} && sudo chmod 770 console.tty"
+                exec "#{sudo_command_string} dtach -n console.tty -z #{xhyve_wrapper} #{start_string} && #{sudo_command_string} chmod 770 console.tty"
             else
                 exec "dtach -n console.tty -z #{xhyve_wrapper} #{start_string}"
             end
@@ -101,7 +101,7 @@ class VM
         Dir.chdir(self.path){
             $logger.debug("sinding kill signal to process id: #{self.pid}")
             if use_sudo then
-                exec "sudo kill -9 #{self.pid}"
+                exec "#{sudo_command_string} kill -9 #{self.pid}"
             else
                 exec "kill -9 #{self.pid}"
             end
@@ -195,6 +195,15 @@ class VM
         return "fail"
     end
 
+
+    def sudo_command_string
+        askpass_path = File.expand_path( File.dirname(__FILE__) + "../../../deps/sudo-askpass" )
+        askpass = "SUDO_ASKPASS='#{askpass_path}'"
+        string = "#{askpass} sudo -A"
+
+        return string
+    end
+
     #Class methods
     def self.find_all
         vmspath = File.expand_path($options['config']['vms_path'])
@@ -258,7 +267,7 @@ class VM
     def create_mac_address
         uuid2mac = File.expand_path( File.dirname(__FILE__) + "/../../deps/uuid2mac" )
         Dir.chdir(self.path){
-            exec "sudo #{uuid2mac} #{uuid} > mac_address"
+            exec "#{sudo_command_string} #{uuid2mac} #{uuid} > mac_address"
         }
     end
 
