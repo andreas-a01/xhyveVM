@@ -19,8 +19,6 @@ class VM
     end
 
     def start
-        xhyve_wrapper = File.expand_path( File.dirname(__FILE__) + "/../xhyve_wrapper.sh" )
-
         start_string = config.start_string(self.uuid)
 
         has_network = config.hash['vm'].has_key?('net')
@@ -264,6 +262,11 @@ class VM
     end
 
     private
+    def xhyve_wrapper
+        xhyve_wrapper = File.expand_path( File.dirname(__FILE__) + "/../../deps/xhyve_wrapper.sh" )
+        return xhyve_wrapper
+    end
+
     def create_mac_address
         uuid2mac = File.expand_path( File.dirname(__FILE__) + "/../../deps/uuid2mac" )
         Dir.chdir(self.path){
