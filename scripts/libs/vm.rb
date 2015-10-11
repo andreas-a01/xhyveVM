@@ -33,9 +33,9 @@ class VM
             $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{start_string}")
 
             if (has_network) then
-                exec "#{sudo_command_string} dtach -n console.tty -z #{xhyve_wrapper} #{start_string} && #{sudo_command_string} chmod 770 console.tty"
+                run_command("#{sudo_command_string} dtach -n console.tty -z #{xhyve_wrapper} #{start_string} && #{sudo_command_string} chmod 770 console.tty")
             else
-                exec "dtach -n console.tty -z #{xhyve_wrapper} #{start_string}"
+                run_command("dtach -n console.tty -z #{xhyve_wrapper} #{start_string}")
             end
 
         }
@@ -45,7 +45,7 @@ class VM
         $logger.debug("changing path")
         Dir.chdir(self.path){
             $logger.debug("removing VM directory: #{file}")
-            exec "rm -r '#{self.path}'"
+            run_command( "rm -r '#{self.path}'" )
         }
     end
 
@@ -61,7 +61,7 @@ class VM
         $logger.debug("changing path")
         Dir.chdir(self.path){
             $logger.debug("getting size of VM with du")
-            size = `du -sh .`
+            size = run_command('du -sh .')
             return size.strip.gsub(/\s+.+/,"") #show only size
         }
     end
@@ -88,7 +88,7 @@ class VM
         vmdir  = File.basename(self.path)
         parrentdir =  File.dirname(self.path)
         $logger.debug("compressing console file: #{console_file}")
-        exec "tar #{compress} -C '#{parrentdir}' -cf '#{archivePath}' '#{vmdir}/'"
+        run_command(  "tar #{compress} -C '#{parrentdir}' -cf '#{archivePath}' '#{vmdir}/'" )
     end
 
     def kill
@@ -99,9 +99,9 @@ class VM
         Dir.chdir(self.path){
             $logger.debug("sinding kill signal to process id: #{self.pid}")
             if use_sudo then
-                exec "#{sudo_command_string} kill -9 #{self.pid}"
+                run_command( "#{sudo_command_string} kill -9 #{self.pid}" )
             else
-                exec "kill -9 #{self.pid}"
+                run_command( "kill -9 #{self.pid}")
             end
         }
     end
@@ -202,6 +202,16 @@ class VM
         return string
     end
 
+    def run_command(command)
+        output = `#{command}`
+        if $?.exitstatus == 0 then
+            return output
+        end
+
+        $logger.error("error: #{$?}")
+        return false
+    end
+
     #Class methods
     def self.find_all
         vmspath = File.expand_path($options['config']['vms_path'])
@@ -236,7 +246,7 @@ class VM
         tmpPath = "/tmp/xhyvevms/"
         if File.exist?(tmpPath) then
             $logger.debug("tmp folder allready exsists, deleting")
-            print `rm -r '#{tmpPath}'`
+            run_command("rm -r '#{tmpPath}'")
         end
 
         $logger.debug("creating tmp folder")
@@ -254,11 +264,8 @@ class VM
 
     def self.valid_archive?(filename)
         system("tar -tzf #{filename} >/dev/null")
-        if $?.exitstatus == 0 then
-            return true
-        end
 
-        return false
+        return $?.success?
     end
 
     private
@@ -270,7 +277,7 @@ class VM
     def create_mac_address
         uuid2mac = File.expand_path( File.dirname(__FILE__) + "/../../deps/uuid2mac" )
         Dir.chdir(self.path){
-            exec "#{sudo_command_string} #{uuid2mac} #{uuid} > mac_address"
+            run_command( "#{sudo_command_string} #{uuid2mac} #{uuid} > mac_address" )
         }
     end
 
