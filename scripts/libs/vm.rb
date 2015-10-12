@@ -99,9 +99,9 @@ class VM
         Dir.chdir(self.path){
             $logger.debug("sinding kill signal to process id: #{self.pid}")
             if use_sudo then
-                run_command( "#{sudo_command_string} kill -9 #{self.pid}" )
+                run_command( "#{sudo_command_string} kill -INT -#{self.pid}" )
             else
-                run_command( "kill -9 #{self.pid}")
+                run_command( "kill -INT -#{self.pid}")
             end
         }
     end
