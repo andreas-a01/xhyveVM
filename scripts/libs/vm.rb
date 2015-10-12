@@ -43,9 +43,9 @@ class VM
 
     def destroy
         $logger.debug("changing path")
-        Dir.chdir(self.path){
-            $logger.debug("removing VM directory: #{file}")
-            run_command( "rm -r '#{self.path}'" )
+        Dir.chdir(File.expand_path($options['config']['vms_path'])){
+            $logger.debug("removing VM directory: #{self.path}")
+            run_command( "rm -rf '#{self.path}'" )
         }
     end
 
