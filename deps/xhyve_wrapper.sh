@@ -1,3 +1,3 @@
-echo $$ > xhyve_wrapper.pid
+echo $$ > .xhyvevm/xhyve_wrapper.pid
 xhyve $@
-rm xhyve_wrapper.pid
+rm .xhyvevm/xhyve_wrapper.pid

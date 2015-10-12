@@ -39,6 +39,11 @@ def run
         exit
     end
 
+    if (vm.status == :notinstalled) && (! $options.force) then
+        $logger.error("VM not install, run install")
+        exit
+    end
+
     vm.start
 end
 

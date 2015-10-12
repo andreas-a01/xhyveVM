@@ -33,9 +33,9 @@ class VM
             $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{start_string}")
 
             if (has_network) then
-                run_command("#{sudo_command_string} dtach -n console.tty -z #{xhyve_wrapper} #{start_string} && #{sudo_command_string} chmod 770 console.tty")
+                run_command("#{sudo_command_string} dtach -n .xhyvevm/console.tty -z #{xhyve_wrapper} #{start_string} && #{sudo_command_string} chmod 770 .xhyvevm/console.tty")
             else
-                run_command("dtach -n console.tty -z #{xhyve_wrapper} #{start_string}")
+                run_command("dtach -n .xhyvevm/console.tty -z #{xhyve_wrapper} #{start_string}")
             end
 
         }
@@ -53,7 +53,7 @@ class VM
         $logger.debug("changing path to: #{self.path}")
         Dir.chdir(self.path){
             $logger.debug("Using detach to reattach")
-            exec "read -p 'Attaching to #{self.name}...\nTo detach from VM again, press (Ctrl-\\) at any time\n\nPress any key to continue... \n' && dtach -a console.tty"
+            exec "read -p 'Attaching to #{self.name}...\nTo detach from VM again, press (Ctrl-\\) at any time\n\nPress any key to continue... \n' && dtach -a .xhyvevm/console.tty"
         }
     end
 
@@ -107,6 +107,12 @@ class VM
     end
 
     def status
+        subfolder = File.expand_path( self.path + "/.xhyvevm/" )
+
+        if (! File.exist?(subfolder)) then
+            return :notinstalled
+        end
+
         if pid_file.nil? then
             return :stopped
         end
@@ -277,7 +283,7 @@ class VM
     def create_mac_address
         uuid2mac = File.expand_path( File.dirname(__FILE__) + "/../../deps/uuid2mac" )
         Dir.chdir(self.path){
-            run_command( "#{sudo_command_string} #{uuid2mac} #{uuid} > mac_address" )
+            run_command("#{sudo_command_string} #{uuid2mac} #{uuid} > .xhyvevm/mac_address")
         }
     end
 
@@ -287,19 +293,19 @@ class VM
 
         $logger.debug("Generating UUID and saving it in file: uuid")
         Dir.chdir(self.path){
-            `echo #{uuid} > uuid`
+            run_command("echo #{uuid} > .xhyvevm/uuid")
         }
         return uuid
     end
 
     def mac_address_file
-        mac_address_file = File.expand_path(self.path + '/mac_address')
+        mac_address_file = File.expand_path(self.path + '/.xhyvevm/mac_address')
 
         return File.file?(mac_address_file) ? mac_address_file : nil
     end
 
     def uuid_file
-        uuid_file = File.expand_path(self.path + '/uuid')
+        uuid_file = File.expand_path(self.path + '/.xhyvevm/uuid')
 
         return File.file?(uuid_file) ? uuid_file : nil
     end
@@ -311,13 +317,13 @@ class VM
     end
 
     def console_file
-        console_file = File.expand_path(self.path + "/console.tty")
+        console_file = File.expand_path(self.path + "/.xhyvevm/console.tty")
 
         return File.file?(console_file) ? console_file : nil
     end
 
     def pid_file
-        pid_file = File.expand_path(self.path + "/xhyve_wrapper.pid")
+        pid_file = File.expand_path(self.path + "/.xhyvevm/xhyve_wrapper.pid")
 
         return File.file?(pid_file) ? pid_file : nil
     end
