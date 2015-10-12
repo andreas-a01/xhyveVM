@@ -10,7 +10,7 @@ class VM
 
     def config
         if config_file.nil? then
-            $logger.error("can't find config file: #{self.config_file}")
+            $logger.error("can't find config file")
             exit
         end
 
@@ -269,7 +269,7 @@ class VM
     end
 
     def self.valid_archive?(filename)
-        system("tar -tzf #{filename} >/dev/null")
+        system("tar -tzf #{filename} | grep 'xhyvevm.yml'")
 
         return $?.success?
     end
@@ -311,7 +311,7 @@ class VM
     end
 
     def config_file
-        config_file = File.expand_path(self.path + '/config.yml')
+        config_file = File.expand_path(self.path + '/xhyvevm.yml')
 
         return File.file?(config_file) ? config_file : nil
     end
