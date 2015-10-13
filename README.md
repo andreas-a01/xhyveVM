@@ -26,23 +26,17 @@ I am only tested this script in El Capitan and you will need a 2010 or later Mac
     	see <command> --help for usage
 
 
+
+
+
 **Example**
 
     #Clone somewhere
     git clone https://github.com/andreas-a01/xhyveVM.git
 
-    #Create executable
+    #Setup xhyveVM
     cd xhyveVM/    
-    mkdir bin   
-    cd bin
-    ln -s ../scripts/xhyvevm.rb xhyvevm
-    chmod +x xhyvevm
-
-    #Add executable to PATH
-    PATH=$PATH:${PWD}
-
-    #Create VMs dir
-    mkdir ~/xhyveVM/
+    make setup
 
     #Check xhyvevm
     xhyvevm check
