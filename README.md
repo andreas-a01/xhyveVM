@@ -2,10 +2,11 @@ xhyveVM
 ========
 A command line tool, that simplifies running virtual machines in xhyve.
 
-I am only tested this script in El Capitan and you will need a 2010 or later Mac (i.e. a CPU that supports EPT).
+Please know that I am only tested this tool on El Capitan.  
+Also you will need a 2010 or later Mac (i.e. a CPU that supports EPT) to use xhyve.
 
 
-**Script usage**
+**Usage**
 
     Usage: xhyvevm [options] <command>
         -h, --help                       Show this message
@@ -26,89 +27,44 @@ I am only tested this script in El Capitan and you will need a 2010 or later Mac
     	see <command> --help for usage
 
 
-
-
-
 **Example**
 
-    #Clone somewhere
+    #Clone
     git clone https://github.com/andreas-a01/xhyveVM.git
 
     #Setup xhyveVM
-    cd xhyveVM/    
+    cd xhyveVM/
     make setup
 
     #Check xhyvevm
     xhyvevm check
 
     #Import tinycore (see release for file)
+    curl -OL https://github.com/andreas-a01/xhyveVM/releases/download/v0.3/tinycore.tar
     xhyvevm import tinycore.tar
 
     #Start & attach
     xhyvevm list
     xhyvevm start tinycore
+    xhyvevm inspect tinycore
     xhyvevm attach tinycore
 
 
-Feedback is highly appreciated
+Feedback is highly appreciated!  
+Please [create an issue](https://github.com/andreas-a01/xhyveVM/issues), if something is not working for you.
 
 
 Changelog
 ---------
-
-* 0.1  
-    Initial release  
-    working with tinycore VM  
-    network is missing  
-
-* 0.2
-    New commands
-        * Check: Check config, dependences and VMs
-
-    Changes to commands
-        * Kill: Does not run clean
-        * Import: Checks archive before import
-
-    General
-        * Logger now handler most message
-        * Better messages from script in general
-        * Debug messages before every system command.
-        * VM Class extended for
-        * New VMconfig class, now handles config for VM
-        * Config is checked before being used
-        * some code clean up.
-
-    Bugfixs
-        Fix error in handling for aguments
-        Fix error in localOptions
+[See here](https://github.com/andreas-a01/xhyveVM/blob/master/CHANGELOG.md)
 
 
-Roadmap
+Credits
 -------
+This project draws code and inspiration from prior works:
 
-* 0.4
-    * network
-    * ssh
-    * Halt
-    * Port forward
+* [mist64/xhyve](https://github.com/mist64/xhyve) for all the real work
+* [ailispaw/docker-root-xhyve](https://github.com/ailispaw/docker-root-xhyve) using Makefile's to build VM
+* [rimusz/coreos-xhyve-ui](https://github.com/rimusz/coreos-xhyve-ui) use detach to get a nice pty, to attach to
 
-    test against boot2boster and CoreOS.
-
-* 0.6
-    * nfs_mounts
-    * build vm with script.rb or MakeFile
-
-    test against debian, arch
-    add to homebrew
-
-
-* 0.8
-    * VM build script repo
-    * search repo
-    * get VM (from repo)
-
-
-* 1.0
-    * code clean up
-    * documentation
-    test against ubuntu
+Thank you all!
