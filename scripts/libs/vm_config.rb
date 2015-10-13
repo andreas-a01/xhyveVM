@@ -47,6 +47,22 @@ class VMconfig
         return true
     end
 
+    def has_network?
+        return self.hash['vm'].has_key?('net')
+    end
+
+    def has_uuid?
+        if self.hash.has_key?('uuid') then
+            return self.hash['uuid']
+        end
+
+        return nil
+    end
+
+    def uuid
+        return self.hash['uuid']
+    end
+
     def start_string(uuid)
         vmconfig = self.hash
 

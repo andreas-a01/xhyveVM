@@ -21,9 +21,7 @@ class VM
     def start
         start_string = config.start_string(self.uuid)
 
-        has_network = config.hash['vm'].has_key?('net')
-
-        if (has_network and mac_address.nil?) then
+        if (config.has_network? && mac_address.nil?) then
             $logger.warn("Need to setup mac adresse before running")
             create_mac_address
         end
@@ -32,8 +30,9 @@ class VM
         Dir.chdir(self.path){
             $logger.debug("running xhyve_wrapper thougth dtach arguments:\n #{start_string}")
 
-            if (has_network) then
-                run_command("#{sudo_command_string} dtach -n .xhyvevm/console.tty -z #{xhyve_wrapper} #{start_string} && #{sudo_command_string} chmod 770 .xhyvevm/console.tty")
+            if (config.has_network?) then
+                run_command("#{sudo_command_string} dtach -n .xhyvevm/console.tty -z #{xhyve_wrapper} #{start_string}")
+                run_command("#{sudo_command_string} chmod 770 .xhyvevm/console.tty")
             else
                 run_command("dtach -n .xhyvevm/console.tty -z #{xhyve_wrapper} #{start_string}")
             end
@@ -148,15 +147,14 @@ class VM
     end
 
     def uuid
-        if (config.hash.has_key?('uuid') && uuid_file) then
+        if (config.has_uuid? && uuid_file) then
             $logger.warn("UUID both in config and on file, using the one from config")
-            return config.hash['uuid']
+            return config.uuid
         end
 
-        if config.hash.has_key?('uuid') then
-            return config.hash['uuid']
+        if config.has_uuid? then
+            return config.uuid
         end
-
 
         if uuid_file then
             return File.read(uuid_file).strip
