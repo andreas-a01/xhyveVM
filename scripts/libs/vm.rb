@@ -36,7 +36,6 @@ class VM
             else
                 run_command("dtach -n .xhyvevm/console.tty -z #{xhyve_wrapper} #{start_string}")
             end
-
         }
     end
 
@@ -44,7 +43,7 @@ class VM
         $logger.debug("changing path")
         Dir.chdir(File.expand_path($options['config']['vms_path'])){
             $logger.debug("removing VM directory: #{self.path}")
-            run_command( "rm -rf '#{self.path}'" )
+            run_command("rm -rf '#{self.path}'")
         }
     end
 
@@ -87,7 +86,7 @@ class VM
         vmdir  = File.basename(self.path)
         parrentdir =  File.dirname(self.path)
         $logger.debug("compressing console file: #{console_file}")
-        run_command(  "tar #{compress} -C '#{parrentdir}' -cf '#{archivePath}' '#{vmdir}/'" )
+        run_command("tar #{compress} -C '#{parrentdir}' -cf '#{archivePath}' '#{vmdir}/'")
     end
 
     def kill
@@ -100,13 +99,13 @@ class VM
             if use_sudo then
                 run_command( "#{sudo_command_string} kill -INT -#{self.pid}" )
             else
-                run_command( "kill -INT -#{self.pid}")
+                run_command("kill -INT -#{self.pid}")
             end
         }
     end
 
     def status
-        subfolder = File.expand_path( self.path + "/.xhyvevm/" )
+        subfolder = File.expand_path(self.path + "/.xhyvevm/")
 
         if (! File.exist?(subfolder)) then
             return :notinstalled
@@ -128,7 +127,7 @@ class VM
             return nil
         end
         Dir.chdir(self.path){
-            $logger.debug("gettigg pid with cat from: #{pid_file} ")
+            $logger.debug("gettigg pid with cat from: #{pid_file}")
             return File.read(pid_file).strip.to_i
         }
     end
@@ -139,7 +138,7 @@ class VM
         end
 
         begin
-          Process.getpgid( self.pid )
+          Process.getpgid(self.pid)
           return true
         rescue Errno::ESRCH
           return false
@@ -168,7 +167,6 @@ class VM
             return nil
         end
         Dir.chdir(self.path){
-            #$logger.debug("gettigg mac address with cat from: #{mac_address_file} ")
             return File.read(mac_address_file).strip
         }
     end
@@ -197,9 +195,8 @@ class VM
         return "fail"
     end
 
-
     def sudo_command_string
-        askpass_path = File.expand_path( File.dirname(__FILE__) + "../../../deps/sudo-askpass" )
+        askpass_path = File.expand_path(File.dirname(__FILE__) + "../../../deps/sudo-askpass")
         askpass = "SUDO_ASKPASS='#{askpass_path}'"
         string = "#{askpass} sudo -A"
 
@@ -211,10 +208,11 @@ class VM
         if $?.exitstatus == 0 then
             return output
         end
-
+        $logger.error("running command: #{command}")
         $logger.error("error: #{$?}")
         return false
     end
+
 
     #Class methods
     def self.find_all
@@ -272,14 +270,15 @@ class VM
         return $?.success?
     end
 
+
     private
     def xhyve_wrapper
-        xhyve_wrapper = File.expand_path( File.dirname(__FILE__) + "/../../deps/xhyve_wrapper.sh" )
+        xhyve_wrapper = File.expand_path(File.dirname(__FILE__) + "/../../deps/xhyve_wrapper.sh")
         return xhyve_wrapper
     end
 
     def create_mac_address
-        uuid2mac = File.expand_path( File.dirname(__FILE__) + "/../../deps/uuid2mac" )
+        uuid2mac = File.expand_path(File.dirname(__FILE__) + "/../../deps/uuid2mac")
         Dir.chdir(self.path){
             run_command("#{sudo_command_string} #{uuid2mac} #{uuid} > .xhyvevm/mac_address")
         }
